@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<!-- =====================================================================
+  Quiz Engine Template — proven engine for exam-review-system skill.
+  Zero dependencies, offline, dark mode, responsive, print-friendly.
+  HOW TO USE: replace the sample data in the script block (QUIZZES /
+  CLOZES / CLASSIFY_Q) with real content, edit the tabs/header, delete
+  nothing in the engine block. Cloze blank marker syntax: {{answer|hint}}.
+====================================================================== -->
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TODO|考試復習系統</title>
+<style>
+:root{
+  --bg:#f4f6fb; --card:#ffffff; --ink:#1e293b; --muted:#64748b; --line:#e2e8f0;
+  --brand:#4f46e5; --brand-soft:#eef2ff; --brand-ink:#3730a3;
+  --green:#15803d; --green-bg:#ecfdf5; --green-line:#34d399;
+  --red:#dc2626; --red-bg:#fef2f2; --red-line:#f87171;
+  --amber-bg:#fffbeb; --amber-line:#f59e0b; --amber-ink:#92400e;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0f172a; --card:#1e293b; --ink:#e2e8f0; --muted:#94a3b8; --line:#334155;
+    --brand:#818cf8; --brand-soft:#272a52; --brand-ink:#c7d2fe;
+    --green:#4ade80; --green-bg:#0b2b1a; --green-line:#22c55e;
+    --red:#f87171; --red-bg:#3b0d0d; --red-line:#ef4444;
+    --amber-bg:#2a2105; --amber-line:#d97706; --amber-ink:#fbbf24;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.75 "Segoe UI","Microsoft JhengHei","PingFang TC","Noto Sans TC",system-ui,sans-serif}
+.wrap{max-width:980px;margin:0 auto;padding:0 14px 60px}
+header{padding:26px 0 8px}
+h1{font-size:1.5rem;margin:0 0 4px;color:var(--brand-ink)}
+.sub{color:var(--muted);font-size:.9rem}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.chip{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:.82rem}
+.chip b{color:var(--brand)}
+nav.tabs{position:sticky;top:0;z-index:50;background:var(--bg);padding:10px 0 6px;border-bottom:2px solid var(--line);margin-bottom:18px}
+.tabrow{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:thin}
+.tab-btn{flex:0 0 auto;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:7px 16px;font-size:.9rem;cursor:pointer;font-family:inherit}
+.tab-btn.active{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:600}
+.panel{display:none}
+.panel.active{display:block}
+h2{font-size:1.25rem;margin:26px 0 10px;color:var(--brand-ink);border-left:4px solid var(--brand);padding-left:10px}
+h3{font-size:1.05rem;margin:22px 0 8px}
+h4{margin:16px 0 6px;font-size:.98rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:12px 0}
+.memo{background:var(--amber-bg);border:1px solid var(--amber-line);border-left:6px solid var(--amber-line);border-radius:10px;padding:14px 18px;margin:14px 0}
+.memo h4{color:var(--amber-ink);margin-top:2px}
+table.tbl{width:100%;border-collapse:collapse;margin:10px 0;font-size:.92rem}
+.tbl th,.tbl td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+.tbl th{background:var(--brand-soft);color:var(--brand-ink)}
+.ex{margin:6px 0;padding-left:14px;border-left:3px solid var(--line)}
+.ex .en{font-weight:600}
+.ex .zh{color:var(--muted);font-size:.88rem}
+.note{color:var(--muted);font-size:.9rem}
+.warn{color:var(--red);font-weight:600}
+.ok{color:var(--green);font-weight:600}
+ul.tight{margin:6px 0;padding-left:22px}
+.qz-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin:18px 0 4px}
+.score{font-size:.9rem;color:var(--brand-ink);background:var(--brand-soft);border-radius:999px;padding:2px 14px;font-weight:600}
+.q{border-top:1px dashed var(--line);padding:14px 0 6px}
+.q .qtext{font-weight:600;margin-bottom:8px}
+.q .qno{display:inline-block;background:var(--brand);color:#fff;border-radius:6px;font-size:.8rem;padding:1px 8px;margin-right:8px}
+.q .src{display:inline-block;border:1px solid var(--brand);color:var(--brand-ink);border-radius:4px;font-size:.72rem;padding:0 6px;margin-left:8px;vertical-align:2px}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px}
+.opts.three{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}
+.opt{text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:8px 12px;font-size:.92rem;cursor:pointer;font-family:inherit;line-height:1.5}
+.opt:hover{border-color:var(--brand)}
+.opt.correct{border-color:var(--green-line);background:var(--green-bg);color:var(--green);font-weight:600}
+.opt.wrong{border-color:var(--red-line);background:var(--red-bg);color:var(--red)}
+.q.locked .opt{cursor:default;opacity:.92}
+.q .exp{display:none;margin-top:8px;background:var(--brand-soft);border-radius:8px;padding:9px 13px;font-size:.9rem}
+.q .exp.show{display:block}
+.q .exp b{color:var(--brand-ink)}
+button.act{border:1.5px solid var(--brand);background:var(--brand);color:#fff;border-radius:8px;padding:7px 18px;font-size:.9rem;cursor:pointer;font-family:inherit;font-weight:600}
+button.act.ghost{background:var(--card);color:var(--brand)}
+.cloze-text{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:10px 0;line-height:2.3}
+.blank input{width:130px;max-width:38vw;border:none;border-bottom:2px solid var(--brand);background:transparent;color:var(--ink);font:inherit;font-weight:600;text-align:center;padding:2px 4px;outline:none}
+.blank input.good{border-bottom-color:var(--green-line);color:var(--green);background:var(--green-bg);border-radius:6px 6px 0 0}
+.blank input.bad{border-bottom-color:var(--red-line);color:var(--red);background:var(--red-bg);border-radius:6px 6px 0 0}
+.blank input.shown{border-bottom-style:dashed;color:var(--amber-ink)}
+.hint{font-size:.8rem;color:var(--muted);white-space:nowrap}
+.result{margin-top:8px;font-weight:700}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+footer{margin-top:40px;color:var(--muted);font-size:.82rem;border-top:1px solid var(--line);padding-top:14px}
+@media print{nav.tabs,.btnrow,button{display:none!important}.panel{display:block!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>TODO|考試復習系統</h1>
+  <div class="sub">TODO 科目 · TODO 範圍 · 教學 → 速記 → 練習 → 考試策略</div>
+  <div class="chips">
+    <span class="chip">① <b>TODO</b> 已讀範圍(送分題)</span>
+    <span class="chip">② TODO 未讀題型</span>
+  </div>
+</header>
+
+<nav class="tabs"><div class="tabrow">
+  <button class="tab-btn active" data-tab="p-teach">① 教學</button>
+  <button class="tab-btn" data-tab="p-memo">⚡ 速記卡</button>
+  <button class="tab-btn" data-tab="p-cloze">📝 挖空練習</button>
+  <button class="tab-btn" data-tab="p-mcq">✅ 選擇練習</button>
+</div></nav>
+
+<!-- ===== TAB: teaching (REPLACE with real content) ===== -->
+<section class="panel active" id="p-teach">
+  <h2>教學(預設學生什麼都不會)</h2>
+  <div class="card">
+    <p>先講「這是什麼」的三條鐵律,再給對比表,例句取自學生自己的講義。</p>
+    <table class="tbl">
+      <tr><th>概念</th><th>對比</th><th>例句</th></tr>
+      <tr><td>TODO</td><td>TODO</td><td>TODO</td></tr>
+    </table>
+    <div class="ex"><span class="en">TODO example sentence.</span><span class="zh">中文解釋。</span></div>
+  </div>
+</section>
+
+<!-- ===== TAB: memo cards (REPLACE with real content) ===== -->
+<section class="panel" id="p-memo">
+  <h2>⚡ 考前速記卡</h2>
+  <div class="memo"><h4>卡 1|TODO 公式</h4>
+    <ol class="tight">
+      <li>TODO 一行一條,最多十條</li>
+      <li><span class="warn">易錯點用紅字</span></li>
+    </ol>
+  </div>
+  <div class="memo"><h4>卡 2|考試當日提醒</h4>
+    <ul class="tight"><li>哪些部分是讀過的(送分)</li><li>字數/答題規則</li></ul>
+  </div>
+</section>
+
+<!-- ===== TAB: cloze (data-driven) ===== -->
+<section class="panel" id="p-cloze">
+  <h2>📝 挖空練習</h2>
+  <p class="note">打字填空,即時批改。想不起就看提示,或按「顯示答案」。</p>
+  <div id="cloze-a"></div>
+</section>
+
+<!-- ===== TAB: MCQ (data-driven) ===== -->
+<section class="panel" id="p-mcq">
+  <h2>✅ 選擇題練習</h2>
+  <h3>分類快測(訓練判斷:屬於哪一類?)</h3>
+  <div class="qz-head"><span class="score" id="score-classify">已答 0/0 · 對 0</span><button class="act ghost" onclick="resetQuiz('classify')">重做</button></div>
+  <div id="q-classify"></div>
+  <h3>選擇題</h3>
+  <div class="qz-head"><span class="score" id="score-main">已答 0/0 · 對 0</span><button class="act ghost" onclick="resetQuiz('main')">重做</button></div>
+  <div id="q-main"></div>
+</section>
+
+<footer>材料來源:TODO。祝考試順利!</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ===================== TABS (engine — keep) ===================== */
+document.querySelectorAll('.tab-btn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.toggle('active', b===btn); });
+    document.querySelectorAll('.panel').forEach(function(p){ p.classList.toggle('active', p.id===btn.dataset.tab); });
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+});
+
+/* ===================== DATA (REPLACE with real content) ===================== */
+/* MCQ: q = question text, opts = 4 options, ans = index of correct, exp = explanation HTML */
+var MAIN_Q = [
+ {q:`TODO question text ______?`, opts:[`A option`,`B option`,`C option`,`D option`], ans:0, exp:`講解:為什麼正確 + 為什麼最誘惑的錯項錯。`, src:`Worksheet 原題` /* optional badge */}
+];
+/* Cloze: paras = paragraphs; blanks use {{answer|hint}} */
+var CLOZES = [
+ {el:'cloze-a', title:'TODO|文章標題(出處)', paras:[
+  `TODO first paragraph with {{answer|中文提示}} blanks in it.`,
+  `TODO second paragraph with another {{blank|提示}}.`
+ ]}
+];
+/* Classification drill: 3 fixed options 全倒裝/半倒裝/沒有倒裝 — rename for the subject's taxonomy */
+var CLASSIFY_Q = [
+ {q:`TODO sentence to classify`, ans:0, exp:`講解為什麼屬於這一類。`}
+];
+CLASSIFY_Q.forEach(function(q){ q.opts = ["分類A","分類B","分類C"]; });
+
+/* ===================== ENGINE (keep as-is) ===================== */
+var quizState = {};
+var CFG = {
+  classify:{qs:CLASSIFY_Q, el:"q-classify", three:true}, /* three:true → no A/B/C labels, 3-wide grid */
+  main:{qs:MAIN_Q, el:"q-main"}
+};
+var LABELS = ["A","B","C","D"];
+
+function renderQuiz(key){
+  var cfg = CFG[key];
+  var rootEl = document.getElementById(cfg.el);
+  rootEl.innerHTML = "";
+  quizState[key] = {done:0, right:0};
+  updateScore(key);
+  cfg.qs.forEach(function(item, qi){
+    var div = document.createElement("div");
+    div.className = "q";
+    var qt = '<div class="qtext"><span class="qno">'+(qi+1)+'</span>' + item.q + '</div>';
+    qt += '<div class="opts'+(CFG[key].three?' three':'')+'">';
+    item.opts.forEach(function(o, oi){
+      var label = CFG[key].three ? o : ("<b>"+LABELS[oi]+".</b> " + o);
+      qt += '<button type="button" class="opt" data-oi="'+oi+'">'+label+'</button>';
+    });
+    qt += '</div><div class="exp"><b>講解:</b>'+item.exp+'</div>';
+    div.innerHTML = qt;
+    rootEl.appendChild(div);
+    div.querySelectorAll(".opt").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        if(div.classList.contains("locked")) return;
+        div.classList.add("locked");
+        var chosen = parseInt(btn.dataset.oi,10);
+        div.querySelectorAll(".opt").forEach(function(b2){
+          var oi = parseInt(b2.dataset.oi,10);
+          if(oi === item.ans) b2.classList.add("correct");
+          else if(oi === chosen) b2.classList.add("wrong");
+        });
+        div.querySelector(".exp").classList.add("show");
+        var st = quizState[key];
+        st.done++;
+        if(chosen === item.ans) st.right++;
+        updateScore(key);
+      });
+    });
+  });
+}
+function updateScore(key){
+  var st = quizState[key] || {done:0, right:0};
+  var total = CFG[key].qs.length;
+  var el = document.getElementById("score-"+key);
+  if(el) el.textContent = "已答 "+st.done+"/"+total+" · 對 "+st.right+(st.done===total ? (st.right===total?" · 全對!🎉":" · 錯題再看講解") : "");
+}
+function resetQuiz(key){ renderQuiz(key); }
+window.resetQuiz = resetQuiz;
+
+/* Cloze engine: parses {{answer|hint}} markers */
+function escapeHtml(s){
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+function buildCloze(cfg){
+  var root = document.getElementById(cfg.el);
+  var total = 0;
+  var html = '<h3>'+cfg.title+'</h3>';
+  cfg.paras.forEach(function(p){
+    var parts = p.split(/\{\{([^|]+)\|([^}]*)\}\}/);
+    var seg = '<div class="cloze-text">';
+    for(var i=0;i<parts.length;i+=3){
+      seg += escapeHtml(parts[i]);
+      if(parts[i+1] !== undefined){
+        total++;
+        seg += '<span class="blank" data-a="'+parts[i+1].toLowerCase()+'"><input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="填空'+total+'"></span><span class="hint">💡'+escapeHtml(parts[i+2])+'</span>';
+      }
+    }
+    seg += '</div>';
+    html += seg;
+  });
+  html += '<div class="btnrow"><button type="button" class="act check">檢查答案</button><button type="button" class="act ghost reveal">顯示答案</button><button type="button" class="act ghost reset">重做</button></div><div class="result" aria-live="polite"></div>';
+  root.innerHTML = html;
+  root.dataset.total = total;
+  var inputs = root.querySelectorAll('.blank input');
+  inputs.forEach(function(inp, idx){
+    inp.addEventListener('keydown', function(e){
+      if(e.key==='Enter'){ e.preventDefault(); if(inputs[idx+1]) inputs[idx+1].focus(); }
+    });
+  });
+  root.querySelector('.check').addEventListener('click', function(){
+    var right = 0;
+    root.querySelectorAll('.blank').forEach(function(b){
+      var inp = b.querySelector('input');
+      var val = inp.value.trim().toLowerCase();
+      inp.classList.remove('good','bad','shown');
+      if(val === b.dataset.a){ inp.classList.add('good'); right++; }
+      else if(val !== ''){ inp.classList.add('bad'); }
+    });
+    var res = root.querySelector('.result');
+    var t = parseInt(root.dataset.total,10);
+    res.textContent = right === t ? '全部答對!'+right+' / '+t+' 🎉' : '答對 '+right+' / '+t+',紅色是錯的,改一改或按「顯示答案」。';
+    res.style.color = right === t ? 'var(--green)' : 'var(--red)';
+  });
+  root.querySelector('.reveal').addEventListener('click', function(){
+    root.querySelectorAll('.blank').forEach(function(b){
+      var inp = b.querySelector('input');
+      inp.value = b.dataset.a;
+      inp.classList.remove('good','bad');
+      inp.classList.add('shown');
+    });
+    var res = root.querySelector('.result');
+    res.textContent = '已顯示全部答案。蓋住答案再默寫一次效果最好。';
+    res.style.color = 'var(--amber-ink)';
+  });
+  root.querySelector('.reset').addEventListener('click', function(){ buildCloze(cfg); });
+}
+
+/* Init */
+Object.keys(CFG).forEach(renderQuiz);
+CLOZES.forEach(buildCloze);
+})();
+</script>
+</body>
+</html>
