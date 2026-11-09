@@ -82,6 +82,7 @@ exam-review-system/
 
 完整更新日誌見 [**Releases**](https://github.com/Dinis0404/exam-review-system/releases) —— 每個版本有獨立發佈說明,Watch 倉庫即可收到新版本通知。
 
+- **v1.2** — 科目優先分流(步驟0 先認科目 + `references/subject-playbooks.md` 科目手冊,語文完整實戰);dark-hub 模板新增「背誦助手」引擎(分組首字背/三步閉環/進度保存/全局顯示隱藏)
 - **v1.1** — 深色樞紐模板、交付後詢問部署、實戰 QA(內容保真核對+雙尺寸實測)、大圖預處理
 - **v1.0** — 初版:分頁式引擎、教學→速記→練習→策略工作流、答案保真規則
 

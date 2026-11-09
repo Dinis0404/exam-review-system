@@ -15,6 +15,10 @@ Build ONE interactive, offline HTML page from the student's own materials. Quali
 
 ## Workflow
 
+### 0. Identify the subject first
+
+Before reading anything in depth, work out **which subject** these materials are for — the exam-scope sheet's title, folder/file names, or a one-page glance will tell you (語文/English/Math/History…). Say it in your first reply (「這是語文科,我按語文流程來」) and **read the matching playbook in `references/subject-playbooks.md`** before building. The subject decides the section mix, practice forms and helper tabs — pick them up front instead of building a generic page and retrofitting.
+
 ### 1. Read every page before writing anything
 
 - Collect the material paths the user names. Photos are usually dumped in one folder — `ls` it first.
@@ -45,6 +49,8 @@ Subject adaptation:
 | Languages (English/Chinese…) | typed cloze from seen passages (many meaningful blanks), MCQ grammar/vocab with explanations, sign/notice reading, sentence joining, essay guide |
 | STEM (Math/Physics/Chem) | worked examples step-by-step, formula cards, "spot the trap" MCQs, unit-conversion drills |
 | Humanities/History | timeline ordering, cause→effect matching, key-term flashcards, source-analysis MCQs |
+
+Full per-subject playbooks (tab lists, data shapes, ready-made patterns): `references/subject-playbooks.md`.
 
 ### 4. Build the HTML
 

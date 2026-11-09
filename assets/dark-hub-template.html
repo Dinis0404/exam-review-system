@@ -208,6 +208,43 @@ table.tbl{width:100%;border-collapse:collapse;font-size:.9rem;min-width:520px}
 .mcard .tmpl{background:var(--warn-soft);border:1px solid rgba(232,189,115,.35);border-radius:10px;padding:11px 14px;margin:10px 0;font-size:.9rem;line-height:1.85}
 .mcard .tmpl b{color:var(--warn)}
 
+/* ---------- recite helper ---------- */
+.memtop{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:16px 0 4px}
+.memprog{flex:1;min-width:200px}
+.textpick{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 4px}
+.tpick{border:1px solid var(--line);background:var(--card);color:var(--muted);border-radius:999px;padding:5px 15px;font-size:.88rem;cursor:pointer;font-family:inherit;transition:all .15s}
+.tpick:hover{color:var(--ink)}
+.tpick.active{color:var(--accent);border-color:rgba(122,162,247,.45);background:var(--accent-soft);font-weight:600}
+.msec{display:none}
+.msec.active{display:block;animation:fadeUp .25s ease}
+.mchunk{border:1px solid var(--line);background:var(--card);border-radius:14px;padding:14px 16px;margin:12px 0;transition:border-color .2s}
+.mchunk.done{border-color:rgba(123,203,161,.55)}
+.mhead{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.mhead b{font-size:1rem}
+.gno{background:var(--accent-soft);color:var(--accent);border-radius:6px;font-size:.75rem;padding:1px 8px;font-weight:700}
+.cuechip{border:1px dashed rgba(232,189,115,.6);color:var(--warn);border-radius:8px;font-size:.8rem;padding:1px 9px}
+.rhychip{color:var(--muted);font-size:.78rem}
+.markbtn{margin-left:auto;border:1.5px solid var(--line2);background:transparent;color:var(--muted);border-radius:8px;padding:3px 12px;font-size:.82rem;cursor:pointer;font-family:inherit;transition:all .15s}
+.markbtn:hover{color:var(--good);border-color:var(--good)}
+.markbtn.on{border-color:var(--good);color:var(--good);background:var(--good-soft)}
+.msteps{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 2px}
+.modebtn{border:1px solid var(--line);background:var(--bg2);color:var(--muted);border-radius:999px;padding:3px 13px;font-size:.82rem;cursor:pointer;font-family:inherit;transition:all .15s}
+.modebtn:hover{color:var(--ink)}
+.modebtn.active{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.revealbtn{border:none;background:transparent;color:var(--muted);font-size:.8rem;cursor:pointer;font-family:inherit;padding:3px 6px}
+.revealbtn:hover{color:var(--accent)}
+.mline{display:flex;gap:12px;align-items:baseline;padding:9px 0;border-bottom:1px dashed var(--line);flex-wrap:wrap}
+.mline:last-child{border-bottom:none}
+.mf{flex:0 0 auto;font-family:Georgia,"Songti TC","Noto Serif TC",serif;font-weight:700;color:var(--warn);letter-spacing:3px;min-width:3.2em}
+.mt{font-family:Georgia,"Songti TC","Noto Serif TC",serif;font-size:1.05rem;font-weight:600;cursor:pointer;line-height:1.9}
+.mt.hide{color:transparent;background:repeating-linear-gradient(45deg,var(--line),var(--line) 6px,transparent 6px,transparent 12px);border-radius:6px;user-select:none;min-width:8em}
+.me{flex-basis:100%;color:var(--muted);font-size:.85rem}
+.mchunk.mode-read .mf{display:none}
+.mchunk.mode-read .mt{cursor:default}
+.mchunk.mode-read .mt.hide{color:var(--ink);background:none}
+.mchunk.mode-hide .mf{display:none}
+.mchunk.mode-hide .me{display:none}
+
 footer{margin-top:46px;color:var(--muted);font-size:.8rem;border-top:1px solid var(--line);padding-top:16px;line-height:1.9}
 
 @media (max-width:560px){
@@ -245,6 +282,7 @@ footer{margin-top:46px;color:var(--muted);font-size:.8rem;border-top:1px solid v
   <nav class="navbar"><div class="navrow">
     <button class="npill active" data-tab="home">首頁</button>
     <button class="npill" data-tab="teach">背誦教學</button>
+    <button class="npill" data-tab="recite">背誦助手</button>
     <button class="npill" data-tab="memo">速記卡</button>
     <button class="npill" data-tab="cloze1">理解默寫</button>
     <button class="npill" data-tab="cloze2">上下句默寫</button>
@@ -274,7 +312,13 @@ footer{margin-top:46px;color:var(--muted);font-size:.8rem;border-top:1px solid v
       <span class="go">進入 →</span>
       <span class="ic" style="background:rgba(122,162,247,.13);color:#7AA2F7"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span>
       <h3>背誦教學</h3>
-      <p>四篇默寫全文+逐句白話,從零到會</p>
+      <p>TODO 默寫全文+逐句白話,從零到會</p>
+    </button>
+    <button class="fcard" data-go="recite">
+      <span class="go">進入 →</span>
+      <span class="ic" style="background:rgba(242,162,92,.13);color:#F2A25C"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v4"/><path d="M8 23h8"/></svg></span>
+      <h3>背誦助手</h3>
+      <p>分組三步閉環:讀→首字背→硬背,進度自動保存</p>
     </button>
     <button class="fcard" data-go="memo">
       <span class="go">進入 →</span>
@@ -343,6 +387,17 @@ footer{margin-top:46px;color:var(--muted);font-size:.8rem;border-top:1px solid v
     <div class="line hl"><div class="orig">TODO 原文重點句</div><div class="expl">TODO 白話解釋/考點提示</div></div>
     <div class="line"><div class="orig">TODO 原文</div><div class="expl">TODO 解釋</div></div>
   </div>
+</section>
+
+<!-- ============ RECITE (memorization helper) ============ -->
+<section class="page" id="recite">
+  <div class="pagehead">
+    <div class="eyebrow">Recite</div>
+    <h2>背誦助手</h2>
+    <p class="desc">三步閉環:①讀(理解)→ ②看首字背(卡住偷看一眼就蓋回去)→ ③硬背;背完標記「已背」,最後去打字實測。進度自動保存。</p>
+  </div>
+  <div id="recite-root"></div>
+  <div class="warnbox"><b class="t">為什麼這樣最快</b>:默寫一遍勝過朗讀五遍——「測自己」比重讀記得牢;分組各個擊破;錯的字整句重寫 2 遍,那就是明天的失分點。</div>
 </section>
 
 <!-- ============ MEMO (flip deck) ============ -->
@@ -756,12 +811,154 @@ function buildCloze(cfg){
   root.querySelector('.reset').addEventListener('click', function(){ buildCloze(cfg); });
 }
 
+/* ===================== RECITE HELPER ===================== */
+var MEM = [
+ {id:'laozi', tab:'cloze1', name:'TODO|篇目一', how:'TODO 分組思路(詩:每4句一組換韻 / 文:情感線)', chunks:[
+   {label:'TODO|組一畫面或情緒', cue:'首 首首', rhy:'韻腳可選', lines:[
+     {t:'TODO 原文第一句', f:'首', e:'TODO 白話/考點'},
+     {t:'TODO 原文第二句', f:'首 首'}
+   ]}
+ ]},
+ {id:'jin', tab:'cloze2', name:'TODO|篇目二', how:'TODO 分組思路', chunks:[
+   {label:'TODO|組一', cue:'首 首', lines:[
+     {t:'TODO 原文', f:'首'}
+   ]}
+ ]}
+];
+
+var memProg = {};
+try { memProg = JSON.parse(localStorage.getItem("mem-review-v1") || "{}") || {}; } catch(e) { memProg = {}; }
+function memSave(){ try { localStorage.setItem("mem-review-v1", JSON.stringify(memProg)); } catch(e){} }
+function memCount(textId){
+  var t=0, d=0;
+  MEM.forEach(function(x){
+    if(textId && x.id !== textId) return;
+    x.chunks.forEach(function(c, ci){ t++; if(memProg[x.id+"-"+ci]) d++; });
+  });
+  return {t:t, d:d};
+}
+function memUpdateProgress(){
+  var a = memCount(null);
+  var bar = document.getElementById("membar");
+  var cnt = document.getElementById("memcount");
+  if(bar) bar.style.width = (a.t ? Math.round(a.d/a.t*100) : 0) + "%";
+  if(cnt) cnt.textContent = "總進度:已背 " + a.d + " / " + a.t + " 組";
+  MEM.forEach(function(x){
+    var c = memCount(x.id);
+    var el = document.getElementById("tp-" + x.id);
+    if(el) el.textContent = x.name.replace(/《|》/g,"") + " " + c.d + "/" + c.t;
+  });
+}
+function chunkMode(chunk, m){
+  chunk.classList.remove("mode-read","mode-cue","mode-hide");
+  chunk.classList.add("mode-" + m);
+  chunk.querySelectorAll(".modebtn").forEach(function(b){ b.classList.toggle("active", b.dataset.m === m); });
+  chunk.querySelectorAll(".mt").forEach(function(t){
+    if(m === "read") t.classList.remove("hide"); else t.classList.add("hide");
+  });
+}
+function renderMem(){
+  var root = document.getElementById("recite-root");
+  var pick = "", secs = "";
+  MEM.forEach(function(x, xi){
+    pick += '<button type="button" class="tpick'+(xi===0?" active":"")+'" data-t="'+x.id+'" id="tp-'+x.id+'">'+x.name.replace(/《|》|36句|蘇軾/g,"")+'</button>';
+    var chs = "";
+    x.chunks.forEach(function(c, ci){
+      var cid = x.id + "-" + ci;
+      var done = !!memProg[cid];
+      var lines = c.lines.map(function(L){
+        return '<div class="mline"><span class="mf">'+L.f+'</span><span class="mt hide">'+L.t+'</span>'+(L.e?'<span class="me">'+L.e+'</span>':'')+'</div>';
+      }).join("");
+      chs += '<div class="mchunk mode-cue'+(done?" done":"")+'" data-cid="'+cid+'">'
+        + '<div class="mhead"><span class="gno">'+x.name.replace(/《|》/g,"")+' '+(ci+1)+'</span><b>'+c.label+'</b>'
+        + '<span class="cuechip">首字 '+c.cue+'</span>'+(c.rhy?'<span class="rhychip">韻:'+c.rhy+'</span>':'')
+        + '<button type="button" class="markbtn'+(done?" on":"")+'">'+(done?"✓ 已背":"標記已背")+'</button></div>'
+        + '<div class="msteps"><button type="button" class="modebtn" data-m="read">① 讀</button>'
+        + '<button type="button" class="modebtn active" data-m="cue">② 首字背</button>'
+        + '<button type="button" class="modebtn" data-m="hide">③ 硬背</button>'
+        + '<button type="button" class="revealbtn">顯示 / 隱藏全部</button></div>'
+        + '<div class="mlines">'+lines+'</div></div>';
+    });
+    secs += '<div class="msec'+(xi===0?" active":"")+'" data-sec="'+x.id+'">'
+      + '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:16px 0 2px">'
+      + '<h3 class="sec" style="margin:0">'+x.name+'</h3>'
+      + '<button type="button" class="act ghost" data-goto="'+x.tab+'" style="padding:4px 14px;font-size:.84rem">去打字實測 →</button>'
+      + '<span class="note">'+x.how+'</span></div>'
+      + chs + '</div>';
+  });
+  root.innerHTML = '<div class="memtop"><div class="pbar memprog"><i id="membar" style="width:0%"></i></div><span class="deckinfo" id="memcount"></span>'
+    + '<button type="button" class="act ghost" id="mem-global" style="padding:4px 14px;font-size:.84rem">顯示全部</button></div>'
+    + '<div class="textpick">'+pick+'</div>' + secs;
+  memUpdateProgress();
+}
+function syncGlobalReveal(){
+  var sec = document.querySelector("#recite-root .msec.active");
+  var btn = document.getElementById("mem-global");
+  if(!sec || !btn) return;
+  btn.textContent = sec.querySelector(".mt.hide") ? "顯示全部" : "隱藏全部";
+}
+
+
 /* ===================== INIT ===================== */
 Object.keys(CFG).forEach(renderQuiz);
 CLOZES.forEach(buildCloze);
 renderDeck();
 renderJudge();
-})();
-</script>
+renderMem();
+
+/* recite interactions (event delegation) */
+document.getElementById("recite-root").addEventListener("click", function(ev){
+  var tp = ev.target.closest(".tpick");
+  if(tp){
+    document.querySelectorAll(".tpick").forEach(function(b){ b.classList.toggle("active", b === tp); });
+    document.querySelectorAll("#recite-root .msec").forEach(function(s){ s.classList.toggle("active", s.dataset.sec === tp.dataset.t); });
+    return;
+  }
+  var go = ev.target.closest("[data-goto]");
+  if(go){ showTab(go.dataset.goto); return; }
+  var chunk = ev.target.closest(".mchunk");
+  if(!chunk) return;
+  var mb = ev.target.closest(".markbtn");
+  if(mb){
+    var cid = chunk.dataset.cid;
+    var on = chunk.classList.toggle("done");
+    mb.classList.toggle("on", on);
+    mb.textContent = on ? "✓ 已背" : "標記已背";
+    if(on) memProg[cid] = 1; else delete memProg[cid];
+    memSave(); memUpdateProgress();
+    return;
+  }
+  var mdb = ev.target.closest(".modebtn");
+  if(mdb){ chunkMode(chunk, mdb.dataset.m); return; }
+  var rb = ev.target.closest(".revealbtn");
+  if(rb){
+    var anyHidden = chunk.querySelector(".mt.hide");
+    chunk.querySelectorAll(".mt").forEach(function(t){
+      if(anyHidden) t.classList.remove("hide");
+      else if(!chunk.classList.contains("mode-read")) t.classList.add("hide");
+    });
+    return;
+  }
+  var mt = ev.target.closest(".mt");
+  if(mt && mt.classList.contains("hide")) mt.classList.remove("hide");
+});
+
+/* global reveal toggle: acts on every chunk of the active text */
+document.getElementById("recite-root").addEventListener("click", function(ev){
+  var gb = ev.target.closest("#mem-global");
+  if(!gb) return;
+  var sec = document.querySelector("#recite-root .msec.active");
+  if(!sec) return;
+  var anyHidden = sec.querySelector(".mt.hide");
+  sec.querySelectorAll(".mchunk").forEach(function(chunk){
+    chunk.querySelectorAll(".mt").forEach(function(t){
+      if(anyHidden) t.classList.remove("hide");
+      else if(!chunk.classList.contains("mode-read")) t.classList.add("hide");
+    });
+  });
+});
+/* keep the global button label in sync no matter what changed it */
+document.getElementById("recite-root").addEventListener("click", function(){ syncGlobalReveal(); });
+})();</script>
 </body>
 </html>
