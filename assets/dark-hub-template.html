@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<!-- =====================================================================
+  Dark Hub Engine Template — exam-review-system skill.
+  Dark-mode-first engine: home hub of function cards, flip-card deck,
+  sequential true/false flash, grouped MCQ, typed cloze with 簡繁-tolerant
+  checking, no horizontal overflow at 320px.
+  HOW TO USE: swap the TODO data (JUDGE_Q / AUTHOR_Q / DRAMA_Q / POETRY_Q /
+  LANG_Q / TEXTS_Q / DECK / CLOZES) and the page copy, keep the engine.
+====================================================================== -->
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<title>TODO|考試復習系統</title>
+<style>
+:root{
+  --bg:#0D1117; --bg2:#151B23; --card:#1A222D; --card2:#1F2937;
+  --line:#2A3441; --line2:#364353;
+  --ink:#E6EDF3; --muted:#9BA8B7;
+  --accent:#7AA2F7; --accent-soft:rgba(122,162,247,.13);
+  --good:#7BCBA1; --good-soft:rgba(123,203,161,.13);
+  --bad:#F08080;  --bad-soft:rgba(240,128,128,.12);
+  --warn:#E8BD73; --warn-soft:rgba(232,189,115,.12);
+  --teal:#6FBFCE; --violet:#A78BFA; --rose:#E8909C; --sky:#86B9F5;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:15.5px/1.8 "Segoe UI","PingFang TC","Microsoft JhengHei","Noto Sans TC",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+::selection{background:rgba(122,162,247,.32)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:#2A3441;border-radius:8px}
+::-webkit-scrollbar-track{background:transparent}
+.wrap{max-width:1024px;margin:0 auto;padding:0 18px 70px}
+
+/* ---------- header & nav ---------- */
+header{position:sticky;top:0;z-index:60;background:rgba(13,17,23,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.hbar{max-width:1024px;margin:0 auto;padding:12px 18px 0;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.logo{width:34px;height:34px;flex:0 0 auto;border-radius:9px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center}
+.logo svg{width:20px;height:20px}
+.brand b{font-size:1.12rem;letter-spacing:.5px}
+.brand small{display:block;color:var(--muted);font-size:.76rem;font-weight:400;margin-top:-3px}
+.examchips{display:flex;gap:6px;flex-wrap:wrap}
+.echip{font-size:.78rem;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:2px 11px;background:var(--card)}
+.echip b{color:var(--accent);font-weight:600}
+nav.navbar{max-width:1024px;margin:0 auto;padding:8px 18px 10px}
+.navrow{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.navrow::-webkit-scrollbar{display:none}
+.npill{flex:0 0 auto;border:1px solid transparent;background:transparent;color:var(--muted);border-radius:999px;padding:5px 14px;font-size:.9rem;cursor:pointer;font-family:inherit;transition:color .15s,background .15s}
+.npill:hover{color:var(--ink);background:var(--card)}
+.npill.active{color:var(--accent);background:var(--accent-soft);border-color:rgba(122,162,247,.35);font-weight:600}
+
+/* ---------- pages ---------- */
+.page{display:none}
+.page.active{display:block;animation:fadeUp .28s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ---------- home ---------- */
+.hero{padding:44px 0 8px;text-align:center}
+.hero h1{font-size:2.15rem;margin:0 0 8px;font-weight:700;letter-spacing:1px}
+.hero h1 .dot{color:var(--accent)}
+.hero .sub{color:var(--muted);font-size:.98rem;margin:0 0 18px}
+.hero .chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.hchip{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:5px 16px;font-size:.85rem;color:var(--ink)}
+.hchip b{color:var(--accent);font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin:34px 0 10px}
+.fcard{position:relative;text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:14px;padding:18px 18px 16px;cursor:pointer;font-family:inherit;transition:transform .18s ease,border-color .18s ease,background .18s ease;display:block;width:100%}
+.fcard:hover{transform:translateY(-3px);border-color:var(--line2);background:var(--card2)}
+.fcard:active{transform:translateY(-1px)}
+.fcard .ic{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;margin-bottom:12px}
+.fcard .ic svg{width:21px;height:21px}
+.fcard h3{margin:0 0 4px;font-size:1.02rem}
+.fcard p{margin:0;color:var(--muted);font-size:.85rem;line-height:1.6}
+.fcard .go{position:absolute;top:14px;right:16px;color:var(--muted);font-size:.8rem;opacity:0;transition:opacity .18s,color .18s}
+.fcard:hover .go{opacity:1;color:var(--accent)}
+.tonight{margin-top:22px;border:1px solid var(--line);border-radius:14px;background:var(--bg2);padding:16px 20px}
+.tonight h4{margin:0 0 8px;font-size:.92rem;color:var(--warn)}
+.tonight ol{margin:0;padding-left:20px;color:var(--muted);font-size:.88rem;line-height:1.9}
+.tonight ol b{color:var(--ink);font-weight:600}
+
+/* ---------- generic page bits ---------- */
+.pagehead{padding:30px 0 4px}
+.eyebrow{font-size:.78rem;letter-spacing:2px;color:var(--accent);font-weight:600;text-transform:uppercase}
+.pagehead h2{font-size:1.45rem;margin:4px 0 6px}
+.pagehead .desc{color:var(--muted);font-size:.92rem;margin:0}
+h3.sec{font-size:1.12rem;margin:30px 0 12px;padding-left:11px;border-left:3px solid var(--accent);font-weight:700}
+h4.sub{margin:18px 0 8px;font-size:.98rem;color:var(--accent)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:14px 0}
+.note{color:var(--muted);font-size:.88rem}
+.warnbox{background:var(--warn-soft);border:1px solid rgba(232,189,115,.4);border-radius:12px;padding:13px 16px;margin:13px 0}
+.warnbox b.t{color:var(--warn)}
+.formula{background:var(--accent-soft);border:1px solid rgba(122,162,247,.35);border-radius:10px;padding:10px 14px;margin:10px 0;font-size:.92rem}
+.ok{color:var(--good);font-weight:600}
+.warn{color:var(--bad);font-weight:600}
+.chiprow{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 4px}
+.jchip{border:1px solid var(--line);background:var(--card);color:var(--muted);border-radius:999px;padding:4px 14px;font-size:.85rem;cursor:pointer;font-family:inherit;transition:all .15s}
+.jchip:hover{color:var(--accent);border-color:rgba(122,162,247,.4)}
+
+/* ---------- teaching lines ---------- */
+.poem .orig{font-family:Georgia,"Songti TC","Noto Serif TC",serif;font-size:1.08rem;font-weight:600;letter-spacing:.4px}
+.line{padding:10px 0 8px;border-bottom:1px dashed var(--line)}
+.line:last-child{border-bottom:none}
+.line .expl{color:var(--muted);font-size:.88rem;margin-top:2px}
+.line.hl{background:var(--accent-soft);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:10px 12px;margin:6px 0}
+.tocline{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 6px}
+
+/* ---------- flip deck ---------- */
+.deckhead{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:16px 0 10px}
+.deckinfo{color:var(--muted);font-size:.88rem}
+.deckinfo b{color:var(--ink)}
+.pbar{height:5px;background:var(--line);border-radius:99px;overflow:hidden;margin-bottom:16px}
+.pbar i{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .25s ease}
+.flipwrap{perspective:1400px;max-width:640px;margin:0 auto}
+.flip3d{position:relative;min-height:340px;cursor:pointer;transition:transform .5s cubic-bezier(.2,.7,.3,1);transform-style:preserve-3d}
+.flip3d.flipped{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--card);border:1px solid var(--line);border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:26px;overflow:hidden}
+.face.front .ic{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;margin-bottom:16px}
+.face.front .ic svg{width:26px;height:26px}
+.face.front h3{margin:0 0 6px;font-size:1.25rem;text-align:center}
+.face.front .cnt{color:var(--muted);font-size:.86rem}
+.face.front .hint{position:absolute;bottom:20px;color:var(--accent);font-size:.82rem;letter-spacing:1px}
+.face.back{transform:rotateY(180deg);justify-content:flex-start;align-items:stretch;padding:20px 22px}
+.face.back h4{margin:2px 0 10px;color:var(--accent);font-size:.95rem;flex:0 0 auto}
+.backscroll{overflow-y:auto;flex:1;font-size:.9rem;line-height:1.9;padding-right:6px}
+.backscroll ul{margin:0;padding-left:20px}
+.backscroll li{margin-bottom:7px}
+.deckbtns{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap}
+
+/* ---------- buttons ---------- */
+button.act{border:1.5px solid var(--accent);background:var(--accent);color:#0D1117;border-radius:10px;padding:8px 20px;font-size:.92rem;cursor:pointer;font-family:inherit;font-weight:600;transition:filter .15s,transform .1s}
+button.act:hover{filter:brightness(1.1)}
+button.act:active{transform:scale(.97)}
+button.act.ghost{background:transparent;color:var(--accent)}
+button.act.ghost:hover{background:var(--accent-soft)}
+button.act.big{padding:11px 26px;font-size:1rem;border-radius:12px}
+button.act.good{background:transparent;border-color:var(--good);color:var(--good)}
+button.act.good:hover{background:var(--good-soft)}
+button.act.bad{background:transparent;border-color:var(--bad);color:var(--bad)}
+button.act.bad:hover{background:var(--bad-soft)}
+button.act:disabled{opacity:.35;cursor:default;filter:none}
+button.act:disabled:hover{filter:none;transform:none}
+
+/* ---------- quiz (MCQ) ---------- */
+.qz-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin:14px 0 6px}
+.scorechip{font-size:.84rem;color:var(--accent);background:var(--accent-soft);border:1px solid rgba(122,162,247,.3);border-radius:999px;padding:3px 14px;font-weight:600}
+.q{border:1px solid var(--line);background:var(--card);border-radius:14px;padding:16px 18px;margin:12px 0;transition:border-color .2s}
+.q.locked{border-color:var(--line2)}
+.q .qtext{font-weight:600;margin-bottom:12px;font-size:.98rem;line-height:1.7}
+.q .qno{display:inline-block;background:var(--accent-soft);color:var(--accent);border-radius:7px;font-size:.78rem;padding:1px 9px;margin-right:9px;font-weight:700}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{text-align:left;border:1.5px solid var(--line);background:var(--bg2);color:var(--ink);border-radius:10px;padding:10px 14px;font-size:.93rem;cursor:pointer;font-family:inherit;line-height:1.65;display:flex;gap:10px;align-items:flex-start;transition:border-color .15s,background .15s}
+.opt .lab{flex:0 0 auto;font-weight:700;color:var(--muted);font-size:.85rem;margin-top:1px}
+.opt:hover{border-color:var(--accent)}
+.opt.correct{border-color:var(--good);background:var(--good-soft)}
+.opt.correct .lab{color:var(--good)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt.wrong .lab{color:var(--bad)}
+.q.locked .opt{cursor:default}
+.q .exp{display:none;margin-top:12px;background:var(--bg2);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;padding:10px 14px;font-size:.9rem;color:var(--muted)}
+.q .exp.show{display:block;animation:fadeUp .25s ease}
+.q .exp b{color:var(--accent)}
+
+/* ---------- judge flash ---------- */
+.jstage{max-width:680px;margin:0 auto}
+.jcard{border:1px solid var(--line);background:var(--card);border-radius:16px;padding:30px 26px;text-align:center;margin-top:14px}
+.jmeta{font-size:.82rem;color:var(--muted);letter-spacing:1px}
+.jq{font-size:1.15rem;font-weight:600;line-height:1.85;margin:16px 0 24px}
+.jbtns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.jbtns .act{min-width:150px}
+.jexp{display:none;margin-top:22px;text-align:left;border-top:1px dashed var(--line);padding-top:18px;animation:fadeUp .3s ease}
+.jexp.show{display:block}
+.jverdict{font-weight:700;font-size:.95rem;margin-bottom:8px}
+.jexp .expbody{background:var(--bg2);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;padding:11px 14px;font-size:.92rem;color:var(--muted);line-height:1.8}
+.jnextrow{display:flex;justify-content:center;margin-top:18px}
+.jend{text-align:center;padding:40px 20px}
+.jend .big{font-size:2.6rem;margin-bottom:6px}
+.jend h3{margin:0 0 6px;font-size:1.35rem}
+.jend p{color:var(--muted);margin:0 0 22px}
+
+/* ---------- cloze ---------- */
+.cloze-text{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:12px 0;line-height:2.5;font-size:1.02rem}
+.cloze-head{display:flex;align-items:baseline;gap:10px;margin:22px 0 4px;flex-wrap:wrap}
+.cloze-head h3{margin:0;font-size:1.05rem}
+.blank input{width:9.5em;max-width:42vw;border:none;border-bottom:2px solid var(--accent);background:rgba(122,162,247,.06);color:var(--ink);font:inherit;font-weight:600;text-align:center;padding:4px 6px;outline:none;border-radius:8px 8px 0 0;transition:background .15s}
+.blank input:focus{background:rgba(122,162,247,.14)}
+.blank input.good{border-bottom-color:var(--good);color:var(--good);background:var(--good-soft)}
+.blank input.bad{border-bottom-color:var(--bad);color:var(--bad);background:var(--bad-soft)}
+.blank input.shown{border-bottom-style:dashed;color:var(--warn);background:var(--warn-soft)}
+.hint{font-size:.8rem;color:var(--muted);white-space:nowrap}
+.result{margin-top:10px;font-weight:700}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+
+/* ---------- tables ---------- */
+.tblwrap{overflow-x:auto;margin:10px 0}
+table.tbl{width:100%;border-collapse:collapse;font-size:.9rem;min-width:520px}
+.tbl th,.tbl td{border:1px solid var(--line);padding:8px 12px;text-align:left;vertical-align:top}
+.tbl th{background:var(--accent-soft);color:var(--ink);font-weight:600;white-space:nowrap}
+.tbl td{color:var(--ink)}
+.tbl td .m,.m{color:var(--muted)}
+.tbl tr:hover td{background:rgba(122,162,247,.04)}
+
+/* ---------- reading (mingshu) ---------- */
+.mcard{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:16px 0;max-width:820px}
+.mcard>h4{margin:0 0 4px;font-size:1.05rem;color:var(--ink)}
+.badge{display:inline-block;font-size:.72rem;color:var(--accent);background:var(--accent-soft);border-radius:6px;padding:1px 9px;margin-left:8px;vertical-align:2px;font-weight:600}
+.mcard .tmpl{background:var(--warn-soft);border:1px solid rgba(232,189,115,.35);border-radius:10px;padding:11px 14px;margin:10px 0;font-size:.9rem;line-height:1.85}
+.mcard .tmpl b{color:var(--warn)}
+
+footer{margin-top:46px;color:var(--muted);font-size:.8rem;border-top:1px solid var(--line);padding-top:16px;line-height:1.9}
+
+@media (max-width:560px){
+  .wrap{padding:0 14px 60px}
+  .hero{padding:30px 0 4px}
+  .hero h1{font-size:1.7rem}
+  .grid{grid-template-columns:1fr;gap:12px}
+  .jcard{padding:24px 16px}
+  .jq{font-size:1.02rem}
+  .cloze-text{padding:16px;line-height:2.3;font-size:.98rem}
+  .examchips{display:none}
+}
+@media print{
+  header,.btnrow,.deckbtns,button{display:none!important}
+  .page{display:block!important}
+  body{background:#fff;color:#111}
+  .card,.face,.q,.mcard{border-color:#ddd;background:#fff;color:#111}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hbar">
+    <div class="brand">
+      <span class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>
+      <div><b>TODO<span class="dot" style="color:var(--accent)">.</span></b><small>TODO 科目 · 衝刺復習系統</small></div>
+    </div>
+    <div class="examchips">
+      <span class="echip">總分 <b>TODO</b></span>
+      <span class="echip">時間 <b>TODO</b></span>
+      <span class="echip"><b>TODO</b></span>
+    </div>
+  </div>
+  <nav class="navbar"><div class="navrow">
+    <button class="npill active" data-tab="home">首頁</button>
+    <button class="npill" data-tab="teach">背誦教學</button>
+    <button class="npill" data-tab="memo">速記卡</button>
+    <button class="npill" data-tab="cloze1">理解默寫</button>
+    <button class="npill" data-tab="cloze2">上下句默寫</button>
+    <button class="npill" data-tab="judge">判斷快閃</button>
+    <button class="npill" data-tab="mcq">選擇題庫</button>
+    <button class="npill" data-tab="mingshu">名著閱讀</button>
+    <button class="npill" data-tab="strategy">考場策略</button>
+  </div></nav>
+</header>
+
+<div class="wrap">
+
+<!-- ============ HOME ============ -->
+<section class="page active" id="home">
+  <div class="hero">
+    <h1>TODO<span class="dot">.</span></h1>
+    <p class="sub">TODO 一句副標題,告訴學生先做什麼。</p>
+    <div class="chips">
+      <span class="hchip">總分 <b>TODO</b></span>
+      <span class="hchip">時間 <b>TODO</b></span>
+      <span class="hchip">TODO 範圍/篇目</span>
+    </div>
+  </div>
+
+  <div class="grid">
+    <button class="fcard" data-go="teach">
+      <span class="go">進入 →</span>
+      <span class="ic" style="background:rgba(122,162,247,.13);color:#7AA2F7"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span>
+      <h3>背誦教學</h3>
+      <p>四篇默寫全文+逐句白話,從零到會</p>
+    </button>
+    <button class="fcard" data-go="memo">
+      <span class="go">進入 →</span>
+      <span class="ic" style="background:rgba(232,189,115,.13);color:#E8BD73"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
+      <h3>考前速記卡</h3>
+      <p>翻面卡片,考試門口最後看的7張卡</p>
+    </button>
+    <button class="fcard" data-go="cloze1">
+      <span class="go">進入 →</span>
+      <span class="ic" style="background:rgba(123,203,161,.13);color:#7BCBA1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></span>
+      <h3>理解性默寫</h3>
+      <p>老子33章+江城子,16題即時批改</p>
+    </button>
+    <button class="fcard" data-go="cloze2">
+      <span class="go">進入 →</span>
+      <span class="ic" style="background:rgba(111,191,206,.13);color:#6FBFCE"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg></span>
+      <h3>上下句默寫</h3>
+      <p>春江花月夜+將進酒,連默過100字</p>
+    </button>
+    <button class="fcard" data-go="judge">
+      <span class="go">進入 →</span>
+      <span class="ic" style="background:rgba(167,139,250,.13);color:#A78BFA"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
+      <h3>判斷快閃</h3>
+      <p>28道正誤閃卡,掃清文學常識陷阱</p>
+    </button>
+    <button class="fcard" data-go="mcq">
+      <span class="go">進入 →</span>
+      <span class="ic" style="background:rgba(134,185,245,.13);color:#86B9F5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 6h11"/><path d="M10 12h11"/><path d="M10 18h11"/><path d="M3 6l1.5 1.5L7 5"/><path d="M3 12l1.5 1.5L7 11"/><path d="M3 18l1.5 1.5L7 17"/></svg></span>
+      <h3>選擇題庫</h3>
+      <p>55題分五組,對應課內9題出題源</p>
+    </button>
+    <button class="fcard" data-go="mingshu">
+      <span class="go">進入 →</span>
+      <span class="ic" style="background:rgba(232,144,156,.13);color:#E8909C"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M9 7h7"/><path d="M9 11h5"/></svg></span>
+      <h3>名著閱讀 8點</h3>
+      <p>《論語別裁》五題答題框架,背就能拿分</p>
+    </button>
+    <button class="fcard" data-go="strategy">
+      <span class="go">進入 →</span>
+      <span class="ic" style="background:rgba(240,128,128,.13);color:#F08080"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span>
+      <h3>考場策略</h3>
+      <p>時間分配、文言詞解四法、作文公式</p>
+    </button>
+  </div>
+
+  <div class="tonight">
+    <h4>🌙 今晚複習順序</h4>
+    <ol>
+      <li><b>TODO 40分</b>:TODO 第一步</li>
+      <li><b>TODO 40分</b>:TODO 第二步</li>
+      <li><b>睡前15分</b>:TODO 最後一步</li>
+    
+  </div>
+
+  <footer>材料來源:TODO。全部離線可用,列印時自動展開全部分頁。祝考試順利!🎓</footer>
+</section>
+
+<!-- ============ TEACH ============ -->
+<section class="page" id="teach">
+  <div class="pagehead">
+    <div class="eyebrow">Teaching</div>
+    <h2>TODO|背誦教學</h2>
+    <p class="desc">TODO 一句說明。先通讀,再去練習頁填空。</p>
+  </div>
+  <div class="card poem">
+    <div class="line hl"><div class="orig">TODO 原文重點句</div><div class="expl">TODO 白話解釋/考點提示</div></div>
+    <div class="line"><div class="orig">TODO 原文</div><div class="expl">TODO 解釋</div></div>
+  </div>
+</section>
+
+<!-- ============ MEMO (flip deck) ============ -->
+<section class="page" id="memo">
+  <div class="pagehead">
+    <div class="eyebrow">Flashcards</div>
+    <h2>考前速記卡</h2>
+    <p class="desc">點擊卡片翻面查看內容;左右按鈕換卡。考試門口最後看的就這幾張。</p>
+  </div>
+  <div class="deckhead">
+    <div class="deckinfo" id="deckinfo"></div>
+    <div class="btnrow" style="margin:0"><button class="act ghost" id="deck-reveal-all">一覽全部</button></div>
+  </div>
+  <div class="pbar"><i id="deckbar" style="width:14%"></i></div>
+  <div class="flipwrap">
+    <div class="flip3d" id="flipcard">
+      <div class="face front" id="deckfront"></div>
+      <div class="face back"><h4 id="deckbacktitle"></h4><div class="backscroll" id="deckback"></div></div>
+    </div>
+  </div>
+  <div class="deckbtns">
+    <button class="act ghost" id="deck-prev">← 上一張</button>
+    <button class="act" id="deck-flip">翻面</button>
+    <button class="act ghost" id="deck-next">下一張 →</button>
+  </div>
+  <div class="warnbox" style="margin-top:20px"><b class="t">提示</b>:紅字是易錯點。明早出門前只翻這一疊就夠了。</div>
+</section>
+
+<!-- ============ CLOZE 1 ============ -->
+<section class="page" id="cloze1">
+  <div class="pagehead">
+    <div class="eyebrow">Dictation</div>
+    <h2>理解性默寫實戰</h2>
+    <p class="desc">8點,題目與老師給的練習同源。打字填空(繁簡輸入都可以),即時批改。</p>
+  </div>
+  <div id="cloze-laozi"></div>
+  <div id="cloze-jiang"></div>
+</section>
+
+<!-- ============ CLOZE 2 ============ -->
+<section class="page" id="cloze2">
+  <div class="pagehead">
+    <div class="eyebrow">Dictation</div>
+    <h2>上下句默寫實戰</h2>
+    <p class="desc">4點,連默超過100字。一句給上句默下句,先按層次線索回憶再檢查。</p>
+  </div>
+  <div id="cloze-chun"></div>
+  <div id="cloze-jin"></div>
+</section>
+
+<!-- ============ JUDGE ============ -->
+<section class="page" id="judge">
+  <div class="pagehead">
+    <div class="eyebrow">True / False</div>
+    <h2>判斷快閃</h2>
+    <p class="desc">全部來自紅綠書文學常識、課本預習案、作業卷。一次一題,答完立即看解析。</p>
+  </div>
+  <div class="jstage">
+    <div class="pbar"><i id="jbar" style="width:0%"></i></div>
+    <div class="deckinfo" id="jscore">第 1 / 28 題 · 對 0</div>
+    <div class="jcard" id="jcard"></div>
+  </div>
+</section>
+
+<!-- ============ MCQ ============ -->
+<section class="page" id="mcq">
+  <div class="pagehead">
+    <div class="eyebrow">Question Bank</div>
+    <h2>選擇題庫</h2>
+    <p class="desc">對應課內9題的出題源,分五組練。點選項即時判定,解析直接展開。</p>
+  </div>
+
+  <h3 class="sec">A|作家作品常識<span style="font-weight:400;color:var(--muted);font-size:.85rem">(紅冊「了解作者+梳理常識」3題)</span></h3>
+  <div class="qz-head"><span class="scorechip" id="score-authors">已答 0/13 · 對 0</span><button class="act ghost" onclick="resetQuiz('authors')">重做</button></div>
+  <div id="q-authors"></div>
+
+  <h3 class="sec">B|戲劇常識<span style="font-weight:400;color:var(--muted);font-size:.85rem">(基礎手冊)</span></h3>
+  <div class="qz-head"><span class="scorechip" id="score-drama">已答 0/9 · 對 0</span><button class="act ghost" onclick="resetQuiz('drama')">重做</button></div>
+  <div id="q-drama"></div>
+
+  <h3 class="sec">C|詩歌常識<span style="font-weight:400;color:var(--muted);font-size:.85rem">(基礎手冊)</span></h3>
+  <div class="qz-head"><span class="scorechip" id="score-poetry">已答 0/10 · 對 0</span><button class="act ghost" onclick="resetQuiz('poetry')">重做</button></div>
+  <div id="q-poetry"></div>
+
+  <h3 class="sec">D|字音字形·詞語·語病<span style="font-weight:400;color:var(--muted);font-size:.85rem">(綠冊「學習語基/微點清障」)</span></h3>
+  <div class="qz-head"><span class="scorechip" id="score-lang">已答 0/9 · 對 0</span><button class="act ghost" onclick="resetQuiz('lang')">重做</button></div>
+  <div id="q-lang"></div>
+
+  <h3 class="sec">E|課文理解<span style="font-weight:400;color:var(--muted);font-size:.85rem">(老子四章/大衛/復活/默寫篇目)</span></h3>
+  <div class="qz-head"><span class="scorechip" id="score-texts">已答 0/14 · 對 0</span><button class="act ghost" onclick="resetQuiz('texts')">重做</button></div>
+  <div id="q-texts"></div>
+</section>
+
+<!-- ============ MINGSHU ============ -->
+<section class="page" id="mingshu">
+  <div class="pagehead">
+    <div class="eyebrow">Reading</div>
+    <h2>TODO|名著/大題頁</h2>
+    <p class="desc">TODO 出題來源說明,告訴學生為什麼背了就能拿分。</p>
+  </div>
+  <div class="formula">答題公式:<b>TODO</b>。</div>
+  <div class="mcard">
+    <h4>題一|TODO<span class="badge">TODO 字數要求</span></h4>
+    <div class="tmpl"><b>TODO 模板</b>:①點題;②展開;③收束。</div>
+  </div>
+</section>
+
+<!-- ============ STRATEGY ============ -->
+<section class="page" id="strategy">
+  <div class="pagehead">
+    <div class="eyebrow">Strategy</div>
+    <h2>考場策略</h2>
+    <p class="desc">TODO 分值結構與課外題搶分公式。</p>
+  </div>
+  <div class="tblwrap"><table class="tbl">
+    <tr><th>大題</th><th>點數</th><th>考什麼</th><th>狀態</th></tr>
+    <tr><td>TODO</td><td>TODO</td><td class="m">TODO</td><td class="ok">✅ 送分</td></tr>
+    <tr><td>TODO</td><td>TODO</td><td class="m">TODO</td><td class="warn">⚠ 課外</td></tr>
+  </table></div>
+  <div class="warnbox"><b class="t">TODO 搶分原則</b>:TODO。</div>
+  <div class="formula"><b>TODO 答題公式</b>:TODO。</div>
+</section>
+
+</div>
+
+<script>
+
+(function(){
+"use strict";
+
+/* ===================== NAV (engine) ===================== */
+function showTab(id){
+  document.querySelectorAll('.npill').forEach(function(b){ b.classList.toggle('active', b.dataset.tab===id); });
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.toggle('active', p.id===id); });
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+document.querySelectorAll('.npill').forEach(function(btn){
+  btn.addEventListener('click', function(){ showTab(btn.dataset.tab); });
+});
+document.querySelectorAll('.fcard').forEach(function(card){
+  card.addEventListener('click', function(){ showTab(card.dataset.go); });
+});
+
+/* ===================== DATA: JUDGE ===================== */
+var JUDGE_Q = [
+ {q:`TODO|寫一句待判斷的說法(答案:正確)。`, ans:0, exp:`講解:為什麼正確,以及對應的考點。`},
+ {q:`TODO|寫一句待判斷的說法(答案:有誤)。`, ans:1, exp:`講解:錯在哪裡,正確說法是什麼。`}
+];
+
+/* ===================== DATA: MCQ ===================== */
+var AUTHOR_Q = [
+ {q:`TODO|作家作品常識題幹(正確的一項)?`, opts:[`正確選項`,`誘惑錯項B`,`誘惑錯項C`,`誘惑錯項D`], ans:0, exp:`講解:為什麼選A,其餘分別錯在哪。`}
+];
+
+var DRAMA_Q = [
+ {q:`TODO|知識板塊題幹?`, opts:[`選項A`,`選項B`,`選項C`,`選項D`], ans:0, exp:`講解。`}
+];
+
+var POETRY_Q = [
+ {q:`TODO|知識板塊題幹?`, opts:[`選項A`,`選項B`,`選項C`,`選項D`], ans:0, exp:`講解。`}
+];
+
+var LANG_Q = [
+ {q:`TODO|語基題幹(注音/詞語/成語/語病)?`, opts:[`選項A`,`選項B`,`選項C`,`選項D`], ans:0, exp:`講解。`}
+];
+
+var TEXTS_Q = [
+ {q:`TODO|課文理解題幹?`, opts:[`選項A`,`選項B`,`選項C`,`選項D`], ans:0, exp:`講解。`}
+];
+
+/* ===================== DATA: DECK (速記卡) ===================== */
+var DECK = [
+ {icon:"book", color:"#7AA2F7", title:"TODO|卡片一標題", html:`<ul>
+  <li>要點一條</li>
+  <li>要點兩條,<span class="warn">紅字易錯點</span></li>
+ </ul>`},
+ {icon:"zap", color:"#E8BD73", title:"TODO|卡片二標題", html:`<ul>
+  <li>要點一條</li>
+ </ul>`}
+];
+
+var ICONS = {
+ book:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
+ zap:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
+ drama:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 9h.01"/><path d="M15 9h.01"/><path d="M8.5 14.5s1.2 1.5 3.5 1.5 3.5-1.5 3.5-1.5"/></svg>',
+ poem:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/><path d="M15 5l4 4"/></svg>',
+ pen:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>',
+ mark:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>',
+ target:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>'
+};
+
+/* ===================== DECK ENGINE ===================== */
+var deckIdx = 0;
+var flipEl = document.getElementById("flipcard");
+function deckItemN(item){
+  var m = item.html.match(/<li>/g);
+  return m ? m.length : 0;
+}
+function renderDeck(){
+  var item = DECK[deckIdx];
+  document.getElementById("deckinfo").innerHTML = "第 <b>"+(deckIdx+1)+" / "+DECK.length+"</b> 張 · <b>"+item.title+"</b>";
+  document.getElementById("deckbar").style.width = Math.round((deckIdx+1)/DECK.length*100)+"%";
+  document.getElementById("deckfront").innerHTML =
+    '<span class="ic" style="background:'+item.color+'22;color:'+item.color+'">'+ICONS[item.icon]+'</span>'+
+    '<h3>'+item.title+'</h3><div class="cnt">'+deckItemN(item)+' 條要點</div>'+
+    '<div class="hint">點擊卡片翻面</div>';
+  document.getElementById("deckbacktitle").textContent = item.title;
+  document.getElementById("deckback").innerHTML = item.html;
+  document.getElementById("deckback").scrollTop = 0;
+  flipEl.classList.remove("flipped");
+  document.getElementById("deck-prev").disabled = deckIdx===0;
+  document.getElementById("deck-next").disabled = deckIdx===DECK.length-1;
+}
+flipEl.addEventListener("click", function(){ flipEl.classList.toggle("flipped"); });
+document.getElementById("deck-flip").addEventListener("click", function(){ flipEl.classList.toggle("flipped"); });
+document.getElementById("deck-prev").addEventListener("click", function(){ if(deckIdx>0){ deckIdx--; renderDeck(); } });
+document.getElementById("deck-next").addEventListener("click", function(){ if(deckIdx<DECK.length-1){ deckIdx++; renderDeck(); } });
+document.getElementById("deck-reveal-all").addEventListener("click", function(){
+  var html = "";
+  DECK.forEach(function(item, i){
+    html += '<h4 class="sub">'+(i+1)+'. '+item.title+'</h4>'+item.html;
+  });
+  document.getElementById("deckbacktitle").textContent = "全部速記卡";
+  document.getElementById("deckback").innerHTML = html;
+  document.getElementById("deckinfo").innerHTML = "一覽模式 · 共 "+DECK.length+" 張";
+  document.getElementById("deckbar").style.width = "100%";
+  flipEl.classList.add("flipped");
+});
+
+/* ===================== DATA: CLOZE ===================== */
+var CLOZES = [
+ {el:'cloze-laozi', title:'TODO|默寫集標題', paras:[
+  `TODO 題幹:「{{答案一|中文提示}} ,{{答案二|提示}}。」`,
+  `TODO 另一段挖空{{答案三|提示}}。`
+ ]}
+];
+
+/* ===================== MCQ ENGINE ===================== */
+var CFG = {
+  authors:{qs:AUTHOR_Q, el:"q-authors"},
+  drama:{qs:DRAMA_Q, el:"q-drama"},
+  poetry:{qs:POETRY_Q, el:"q-poetry"},
+  lang:{qs:LANG_Q, el:"q-lang"},
+  texts:{qs:TEXTS_Q, el:"q-texts"}
+};
+var LABELS = ["A","B","C","D"];
+var quizState = {};
+
+function renderQuiz(key){
+  var cfg = CFG[key];
+  var rootEl = document.getElementById(cfg.el);
+  rootEl.innerHTML = "";
+  quizState[key] = {done:0, right:0};
+  updateScore(key);
+  cfg.qs.forEach(function(item, qi){
+    var div = document.createElement("div");
+    div.className = "q";
+    var qt = '<div class="qtext"><span class="qno">'+(qi+1)+'</span>' + item.q + '</div>';
+    qt += '<div class="opts">';
+    item.opts.forEach(function(o, oi){
+      qt += '<button type="button" class="opt" data-oi="'+oi+'"><span class="lab">'+LABELS[oi]+'</span><span>'+o+'</span></button>';
+    });
+    qt += '</div><div class="exp"><b>講解:</b>'+item.exp+'</div>';
+    div.innerHTML = qt;
+    rootEl.appendChild(div);
+    div.querySelectorAll(".opt").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        if(div.classList.contains("locked")) return;
+        div.classList.add("locked");
+        var chosen = parseInt(btn.dataset.oi,10);
+        div.querySelectorAll(".opt").forEach(function(b2){
+          var oi = parseInt(b2.dataset.oi,10);
+          if(oi === item.ans) b2.classList.add("correct");
+          else if(oi === chosen) b2.classList.add("wrong");
+        });
+        div.querySelector(".exp").classList.add("show");
+        var st = quizState[key];
+        st.done++;
+        if(chosen === item.ans) st.right++;
+        updateScore(key);
+      });
+    });
+  });
+}
+function updateScore(key){
+  var st = quizState[key] || {done:0, right:0};
+  var total = CFG[key].qs.length;
+  var el = document.getElementById("score-"+key);
+  if(el) el.textContent = "已答 "+st.done+"/"+total+" · 對 "+st.right+(st.done===total ? (st.right===total?" · 全對!🎉":" · 錯題再看講解") : "");
+}
+function resetQuiz(key){ renderQuiz(key); }
+window.resetQuiz = resetQuiz;
+
+/* ===================== JUDGE ENGINE (sequential flash) ===================== */
+var jState = {i:0, done:0, right:0};
+function judgeProgress(){
+  document.getElementById("jbar").style.width = Math.round(jState.done/JUDGE_Q.length*100)+"%";
+  document.getElementById("jscore").textContent = "第 "+Math.min(jState.i+1,JUDGE_Q.length)+" / "+JUDGE_Q.length+" 題 · 對 "+jState.right;
+}
+function renderJudge(){
+  var card = document.getElementById("jcard");
+  if(jState.i >= JUDGE_Q.length){
+    var allRight = jState.right === JUDGE_Q.length;
+    card.innerHTML = '<div class="jend"><div class="big">'+(allRight?"🏆":(jState.right>=JUDGE_Q.length*0.8?"🎉":"💪"))+'</div>'+
+      '<h3>答對 '+jState.right+' / '+JUDGE_Q.length+'</h3>'+
+      '<p>'+(allRight?"全對!紅燈陷阱已經清空。":(jState.right>=JUDGE_Q.length*0.8?"很穩!錯過的題看一眼解析即可。":"錯題再刷一遍,解析就是考點。"))+'</p>'+
+      '<button type="button" class="act big" id="jredo">重做全部</button></div>';
+    document.getElementById("jredo").addEventListener("click", function(){
+      jState = {i:0, done:0, right:0};
+      renderJudge();
+    });
+    judgeProgressEnd();
+    return;
+  }
+  var item = JUDGE_Q[jState.i];
+  card.innerHTML =
+    '<div class="jmeta">第 '+(jState.i+1)+' 題 · 判斷下面的說法</div>'+
+    '<div class="jq">'+item.q+'</div>'+
+    '<div class="jbtns"><button type="button" class="act good big" data-v="0">✔ 正確</button><button type="button" class="act bad big" data-v="1">✘ 有誤</button></div>'+
+    '<div class="jexp" id="jexp"><div class="jverdict" id="jverdict"></div><div class="expbody" id="jexpbody"></div><div class="jnextrow"><button type="button" class="act" id="jnext">'+(jState.i===JUDGE_Q.length-1?"查看成績":"下一題 →")+'</button></div></div>';
+  judgeProgress();
+  card.querySelectorAll(".jbtns .act").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var chosen = parseInt(btn.dataset.v,10);
+      card.querySelectorAll(".jbtns .act").forEach(function(b){ b.disabled = true; });
+      if(chosen === item.ans) btn.style.filter = "brightness(1.25)";
+      else btn.style.opacity = ".45";
+      var v = document.getElementById("jverdict");
+      if(chosen === item.ans){ v.textContent = "✔ 回答正確"; v.style.color = "var(--good)"; jState.right++; }
+      else{
+        v.textContent = "✘ 回答錯誤 · 正確答案:「"+(item.ans===0?"正確":"有誤")+"」";
+        v.style.color = "var(--bad)";
+      }
+      document.getElementById("jexpbody").textContent = item.exp;
+      document.getElementById("jexp").classList.add("show");
+      jState.done++;
+      judgeProgress();
+      document.getElementById("jnext").addEventListener("click", function(){ jState.i++; renderJudge(); });
+    });
+  });
+}
+function judgeProgressEnd(){
+  document.getElementById("jbar").style.width = "100%";
+  document.getElementById("jscore").textContent = "完成 · 共對 "+jState.right+" / "+JUDGE_Q.length+" 題";
+}
+
+/* ===================== CLOZE ENGINE (繁簡 normalization kept) ===================== */
+var S2T = "连連处處万萬无無纤纖尘塵楼樓妆妝捣搗还還闻聞愿願鸿鴻潜潛跃躍闲閒尽盡复復雾霧归歸满滿树樹头頭发髮丝絲乐樂进進倾傾听聽钟鐘馔饌贵貴贤賢陈陳欢歡谑謔为為钱錢径徑须須对對马馬儿兒将將换換与與尔爾销銷胜勝强強凄淒凉涼饮飲见見应應帘簾来來华華长長飞飛鱼魚龙龍梦夢怜憐潇瀟谁誰云雲枫楓转轉绕繞轮輪穷窮觉覺两兩话話纵縱识識轩軒顾顧泪淚难難乡鄉黄黃镜鏡会會请請圣聖时時帘簾";
+var MAP = {};
+for(var mi=0; mi<S2T.length; mi+=2){ MAP[S2T.charAt(mi)] = S2T.charAt(mi+1); }
+function norm(s){
+  s = s.toLowerCase().replace(/\s+/g, "");
+  var out = "";
+  for(var i=0;i<s.length;i++){ var ch = s.charAt(i); out += (MAP[ch] || ch); }
+  return out;
+}
+function escapeHtml(s){
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+function buildCloze(cfg){
+  var root = document.getElementById(cfg.el);
+  var total = 0;
+  var html = '<div class="cloze-head"><h3>'+cfg.title+'</h3></div>';
+  cfg.paras.forEach(function(p){
+    var parts = p.split(/\{\{([^|]+)\|([^}]*)\}\}/);
+    var seg = '<div class="cloze-text">';
+    for(var i=0;i<parts.length;i+=3){
+      seg += escapeHtml(parts[i]);
+      if(parts[i+1] !== undefined){
+        total++;
+        seg += '<span class="blank" data-a="'+norm(parts[i+1])+'" data-show="'+escapeHtml(parts[i+1].split('/')[0])+'"><input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="填空'+total+'"></span><span class="hint">💡'+escapeHtml(parts[i+2])+'</span>';
+      }
+    }
+    seg += '</div>';
+    html += seg;
+  });
+  html += '<div class="btnrow"><button type="button" class="act check">檢查答案</button><button type="button" class="act ghost reveal">顯示答案</button><button type="button" class="act ghost reset">重做</button></div><div class="result" aria-live="polite"></div>';
+  root.innerHTML = html;
+  root.dataset.total = total;
+  var inputs = root.querySelectorAll('.blank input');
+  inputs.forEach(function(inp, idx){
+    inp.addEventListener('keydown', function(e){
+      if(e.key==='Enter'){ e.preventDefault(); if(inputs[idx+1]) inputs[idx+1].focus(); }
+    });
+  });
+  root.querySelector('.check').addEventListener('click', function(){
+    var right = 0;
+    root.querySelectorAll('.blank').forEach(function(b){
+      var inp = b.querySelector('input');
+      var val = norm(inp.value);
+      inp.classList.remove('good','bad','shown');
+      if(val === b.dataset.a){ inp.classList.add('good'); right++; }
+      else if(val !== ''){ inp.classList.add('bad'); }
+    });
+    var res = root.querySelector('.result');
+    var t = parseInt(root.dataset.total,10);
+    res.textContent = right === t ? '全部答對!'+right+' / '+t+' 🎉' : '答對 '+right+' / '+t+',紅色是錯的,改一改或按「顯示答案」。';
+    res.style.color = right === t ? 'var(--good)' : 'var(--bad)';
+  });
+  root.querySelector('.reveal').addEventListener('click', function(){
+    root.querySelectorAll('.blank').forEach(function(b){
+      var inp = b.querySelector('input');
+      inp.value = b.dataset.show;
+      inp.classList.remove('good','bad');
+      inp.classList.add('shown');
+    });
+    var res = root.querySelector('.result');
+    res.textContent = '已顯示全部答案。蓋住答案再默寫一次效果最好。';
+    res.style.color = 'var(--warn)';
+  });
+  root.querySelector('.reset').addEventListener('click', function(){ buildCloze(cfg); });
+}
+
+/* ===================== INIT ===================== */
+Object.keys(CFG).forEach(renderQuiz);
+CLOZES.forEach(buildCloze);
+renderDeck();
+renderJudge();
+})();
+</script>
+</body>
+</html>
